@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Twittler</title>
+  <script src="jquery.js"></script>
+  <script src="data_generator.js"></script>
+  <link rel="stylesheet" type="text/css" href="mine.css">
+</head>
+
+<body>
+  <h1 class="heading">Twittler</h1>
+  <h2 class="subheading">where the wild things are</h2>
+  <div class="tweetdisplay" </div>
+    <div class="history" </div>
+      <script>
+        $(document).ready(function() {
+          var $container = $('.tweetdisplay');
+          $container.html('');
+          var index = streams.home.length - 1;
+
+          // to intitially populate the page:
+          while (index >= 0) {
+            var tweet = streams.home[index];
+            var timestamp = Date.now() - tweet.created_at;
+            var $username = $('<h1 class="username" title="click here for more tweets from this user"</h1>').css('cursor', 'pointer');
+            var $tweet = $('<p class="tweet"</p>');
+            var $timestamp = $('<p class="timestamp"</p>');
+            $username.text('@' + tweet.user);
+            $tweet.text(tweet.message).appendTo($username);
+            $timestamp.text('Created ' + timestamp + ' seconds ago').appendTo($tweet);
+            $username.appendTo($container);
+            index -= 1;
+          }
+
+          function userHistory() {
+            clearInterval(x);
+            $container.empty();
+            var chosenUser = $(this).clone().children().remove().end().text().slice(1)
+            var counter = streams.users[chosenUser].length - 1;
+            while (counter >= 0) {
+              var tweet = streams.users[chosenUser][counter];
+              var timestamp = tweet.created_at;
+              // var timestamp = tweet.created_at;
+              var $tweet = $('<p class="tweet"</p>');
+              var $userName = $('<h1 class="username" title="click here to return to your stream"</h1>').css('cursor', 'pointer');
+              var $timestamp = $('<p class="timestamp"</p>');
+              $userName.text('@' + chosenUser)
+              $tweet.text(tweet.message).appendTo($userName);
+              $timestamp.text(timestamp).appendTo($tweet);
+              $userName.appendTo($container);
+              counter -= 1;
+            }
+            $('.username').on('click', function() {
+              displayNewTweets();
+              x = setInterval(displayNewTweets, 1500)
+            });
+          }
+
+          $('.username').on('click', $username, userHistory);
+
+          // to continue automatically populating the page as data is generated:
+          function displayNewTweets() {
+            $container.empty()
+            var index = streams.home.length - 1;
+            while (index >= 0) {
+              var tweet = streams.home[index];
+              var timestamp = Date.now() - tweet.created_at;
+              var $username = $('<h1 class="username" title="click here for more tweets from this user"</h1>').css('cursor', 'pointer');
+              var $tweet = $('<p class="tweet"</p>');
+              var $timestamp = $('<p class="timestamp"</p>');
+              $username.text('@' + tweet.user);
+              $tweet.text(tweet.message).appendTo($username); // because we are appending the 'text extends' -- each element should be appended to a single parent=
+              $timestamp.text('Created ' + timestamp + ' seconds ago').appendTo($tweet);
+              $username.appendTo($container);
+              index -= 1;
+            }
+            $('.username').on('click', $username, userHistory);
+            // setTimeout(displayNewTweets, 2000);
+          }
+          var x = setInterval(displayNewTweets, 1500);
+          // setInterval(displayNewTweets, 2000); // set an interval here to call displayNewTweets every 2 seconds; and then in the click handler clear the interval and subsequently reset it?
+        });
+      </script>
+</body>
+
+</html>
